@@ -59,7 +59,7 @@ const App = () => {
         // DA RECUPERARE VIA API
         //setTemperatureSensors([])
 
-        const urlGetClimateSensors = localStorage.getItem("urlGetClimateSensors") || "https://jsonplaceholder.typicode.com/users/";
+        const urlGetClimateSensors = localStorage.getItem("urlGetClimateSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
         fetch(urlGetClimateSensors, defaultHeader)
             .then(res => res.json())
             .then(
@@ -75,7 +75,7 @@ const App = () => {
                 }
             )
         
-        const urlGetTemperatureSensors = localStorage.getItem("urlGetTemperatureSensors") || "https://jsonplaceholder.typicode.com/users/";
+        const urlGetTemperatureSensors = localStorage.getItem("urlGetTemperatureSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
         fetch(urlGetTemperatureSensors, defaultHeader)
             .then(res => res.json())
             .then(
