@@ -12,6 +12,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import Dashboard from './components/Dashboard'
 import ConfigPanel from './components/ConfigPanel'
+import BeachAccessIcon from '@mui/icons-material/BeachAccess';
   
 export const ConfContext = React.createContext("conf");
 
@@ -207,6 +208,18 @@ const App = () => {
                                 </Toolbar>
                             </AppBar>
                         </Grid>
+                        {appConfig.status === false && (
+                        <Grid item xs={12}>
+                            <h2 style={{textAlign: 'center'}}>Cronotermostato disattivato, acceddere alle impostazioni ( <span onClick={handleSettingsOpen}><SettingsIcon /></span>) per attivarlo.</h2>
+                        </Grid>  
+                        )}
+                        {appConfig.vacationMode && appConfig.status && (
+                        <Grid item xs={12}>
+                            <h1 style={{textAlign: 'center'}}><BeachAccessIcon fontSize="large" /></h1>
+                            <h2 style={{textAlign: 'center'}}>Cronotermostato in modalità vacanza ( {appConfig.vacationTemperature}°), acceddere alle impostazioni ( <span onClick={handleSettingsOpen}><SettingsIcon /></span>) per modificarlo.</h2>
+                        </Grid>  
+                        )}
+                        {appConfig.status && !appConfig.vacationMode && ( 
                         <Grid item xs={12}>
                             <TabContext value={tabIndex}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -227,7 +240,7 @@ const App = () => {
                                 })}                            
                             </TabContext>  
                         </Grid>
-                        
+                        )}
                         {/*<Grid item xs={12}>
                             <ul>
                             {users.map(user => (

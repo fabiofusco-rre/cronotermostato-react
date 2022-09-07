@@ -108,9 +108,9 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
     };
 
     // console.log('appConfigig:', appConfig)
-    return (isLoaded &&
+    return (isLoaded && appConfig.status &&
         <div>
-            <h1>Dashboard {name}</h1>
+            <h1>{name}</h1>
             <h2>Set point per ciascuna mezz'ora:</h2>
             <Box sx={{ bgcolor: 'background.paper' }}>
             <Tabs      
