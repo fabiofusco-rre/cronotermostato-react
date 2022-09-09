@@ -59,6 +59,25 @@ const App = () => {
         // DA RECUPERARE VIA API
         //setTemperatureSensors([])
 
+        const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:9081/config";
+        fetch(urlGetConfig)
+            .then(res => res.json())
+            .then(
+                (data) => {
+                    //setIsLoaded(true);
+                    //const r = data.filter(el => el.entity_id.startsWith("climate."));
+                    const conf = data //JSON.parse(data)
+                    console.log('rconfig',conf)
+                    setAppConfig(conf)
+                    //setClimateSensors(r.map(i => i.entity_id));
+                },
+                (error) => {
+                    setIsLoaded(true);
+                    setError(error);
+                }
+            )
+        
+
         const urlGetClimateSensors = localStorage.getItem("urlGetClimateSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
         fetch(urlGetClimateSensors, defaultHeader)
             .then(res => res.json())
@@ -90,10 +109,12 @@ const App = () => {
                     setIsLoaded(true);
                     setError(error);
                 }
-            )        
+        
+                )        
 
+        /*
         let conf = null
-        const saved = localStorage.getItem("appConfig");
+        //const saved = localStorage.getItem("appConfig");
         if(saved) {
             conf = JSON.parse(saved)
         } else {        
@@ -170,9 +191,11 @@ const App = () => {
             //console.log(conf)
             
         }
+
         setAppConfig(conf)
+        */
         
-        console.log('initial',conf)
+        console.log('initial',appConfig)
         //localStorage.setItem("appConfig", JSON.stringify(conf));
         //if(temperatureSensors.length > 0) {
         //setIsLoaded(true)
@@ -184,7 +207,7 @@ const App = () => {
     } else if (!isLoaded) {
         return <div>Loading...</div>;
     } else {
-        console.log(appConfig)
+        console.log('Caricato:', appConfig)
         return (            
                 <div>
                     <Box sx={{ flexGrow: 1 }}>
