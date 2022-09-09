@@ -12,6 +12,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
+import {saveConfig} from '../lib/helpers'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -26,18 +27,20 @@ const ConfigTimeslice = ({open, toggleOpen, title, appConfig, setAppConfig}) => 
     
     const handleChange = (event) => {
         let newValue = event.target.value
-        console.log(newValue)
+        console.log(newValue, appConfig.currentTab)
         setValue(newValue);
-        console.log(appConfig)
+        console.log('handleChange', appConfig)
         let conf = {...appConfig}
         conf.zones[appConfig.currentTab].setpointTimeslice[title] = newValue
 
         setAppConfig(conf)
+        saveConfig(conf)
     }
 
-    const saveConfig = () => {
+    const handleSaveConfig = () => {
         let conf = {...appConfig}
-        localStorage.setItem("appConfig", JSON.stringify(conf));
+        saveConfig(conf)
+        //localStorage.setItem("appConfig", JSON.stringify(conf));
         toggleOpen()
     }
 
@@ -61,7 +64,7 @@ const ConfigTimeslice = ({open, toggleOpen, title, appConfig, setAppConfig}) => 
                         <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                         Configurazione set point
                         </Typography>
-                        <Button autoFocus color="inherit" onClick={saveConfig}>
+                        <Button autoFocus color="inherit" onClick={handleSaveConfig}>
                         Salva
                         </Button>
                     </Toolbar>

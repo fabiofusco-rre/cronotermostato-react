@@ -20,7 +20,7 @@ const App = () => {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     // const [users, setUsers] = useState([]);
-    const [tabIndex, setTabIndex] = useState('1');
+    const [tabIndex, setTabIndex] = useState(1);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [zones, setZones] = useState([]);
     const [climateSensors, setClimateSensors] = useState([])
@@ -31,9 +31,8 @@ const App = () => {
        setSettingsOpen(!settingsOpen);
     };   
 
-    const handleTabChange = (event, newValue) => {    
-        console.log(newValue)    
-        setTabIndex(newValue);
+    const handleTabChange = (event, newValue) => {
+        setTabIndex(newValue)
         
         appConfig.currentTab = newValue - 1
         setAppConfig(appConfig)
@@ -53,13 +52,9 @@ const App = () => {
             { key: "2", label: "Notte" },            
         ])
 
-        // DA RECUPERARE VIA API
-        //setClimateSensors([])
-
-        // DA RECUPERARE VIA API
-        //setTemperatureSensors([])
-
-        const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:9081/config";
+        //Recupera conf via API interne
+        //const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:9081/config";
+        const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:" + process.env.REACT_APP_INTERNAL_API_PORT + "/config";        
         fetch(urlGetConfig)
             .then(res => res.json())
             .then(
@@ -67,7 +62,7 @@ const App = () => {
                     //setIsLoaded(true);
                     //const r = data.filter(el => el.entity_id.startsWith("climate."));
                     const conf = data //JSON.parse(data)
-                    console.log('rconfig',conf)
+                    //console.log('rconfig',conf)
                     setAppConfig(conf)
                     //setClimateSensors(r.map(i => i.entity_id));
                 },
@@ -77,15 +72,16 @@ const App = () => {
                 }
             )
         
-
-        const urlGetClimateSensors = localStorage.getItem("urlGetClimateSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
+        //Recupera i climate sensors da HA
+        //const urlGetClimateSensors = localStorage.getItem("urlGetClimateSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
+        const urlGetClimateSensors = localStorage.getItem("urlAPIStates") || "/api/states";
         fetch(urlGetClimateSensors, defaultHeader)
             .then(res => res.json())
             .then(
                 (data) => {
                     //setIsLoaded(true);
                     const r = data.filter(el => el.entity_id.startsWith("climate."));
-                    console.log('r',r)
+                    //console.log('r',r)
                     setClimateSensors(r.map(i => i.entity_id));
                 },
                 (error) => {
@@ -94,14 +90,16 @@ const App = () => {
                 }
             )
         
-        const urlGetTemperatureSensors = localStorage.getItem("urlGetTemperatureSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
+        //Recupera i sensori di temperatura
+        //const urlGetTemperatureSensors = localStorage.getItem("urlGetTemperatureSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
+        const urlGetTemperatureSensors = localStorage.getItem("urlAPIStates") || "/api/states";
         fetch(urlGetTemperatureSensors, defaultHeader)
             .then(res => res.json())
             .then(
                 (data) => {
                     //setIsLoaded(true);                    
                     const r = data.filter(el => el.entity_id.startsWith("temperature."));
-                    console.log('r',r)
+                    //console.log('r',r)
                     setTemperatureSensors(r.map(i => i.entity_id));      
                     setIsLoaded(true)              
                 },
@@ -194,8 +192,15 @@ const App = () => {
 
         setAppConfig(conf)
         */
+        const tmpTabIndex = (appConfig.currentTab + 1).toString()
+        //console.log('tmpTabIndex', appConfig, appConfig.currentTab, tmpTabIndex)
+        if(tmpTabIndex === NaN) {
+            setTabIndex('0')
+        } else {
+            setTabIndex((appConfig.currentTab + 1).toString())
+        }
         
-        console.log('initial',appConfig)
+        //console.log('initial',appConfig)
         //localStorage.setItem("appConfig", JSON.stringify(conf));
         //if(temperatureSensors.length > 0) {
         //setIsLoaded(true)
@@ -204,10 +209,10 @@ const App = () => {
     
     if (error) {
         return <div>Error: {error.message}</div>;
-    } else if (!isLoaded) {
+    } else if (!isLoaded || appConfig.length === 0) {
         return <div>Loading...</div>;
     } else {
-        console.log('Caricato:', appConfig)
+        //console.log('Caricato:', appConfig)        
         return (            
                 <div>
                     <Box sx={{ flexGrow: 1 }}>
@@ -242,7 +247,7 @@ const App = () => {
                             <h2 style={{textAlign: 'center'}}>Cronotermostato in modalità vacanza ( {appConfig.vacationTemperature}°), acceddere alle impostazioni ( <span onClick={handleSettingsOpen}><SettingsIcon /></span>) per modificarlo.</h2>
                         </Grid>  
                         )}
-                        {appConfig.status && !appConfig.vacationMode && ( 
+                        {appConfig.status && !appConfig.vacationMode && !isNaN(appConfig.currentTab) && !isNaN(tabIndex) && ( 
                         <Grid item xs={12}>
                             <TabContext value={tabIndex}>
                                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
@@ -28,11 +27,13 @@ function getStyles(name, personName, theme) {
   };
 }
 
-const MultipleSelectChip = ({items}) => {
+const MultipleSelectChip = ({items, onChangePost, value}) => {
   const theme = useTheme();
   const [personName, setPersonName] = React.useState([]);
+  const [selectedValues, setSelectedValues] = React.useState(value);
 
   const handleChange = (event) => {
+    console.log(event)
     const {
       target: { value },
     } = event;
@@ -40,6 +41,9 @@ const MultipleSelectChip = ({items}) => {
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
+    setSelectedValues(value)
+    //items = value
+    onChangePost(value);    
   };
 
   return (
@@ -49,7 +53,7 @@ const MultipleSelectChip = ({items}) => {
           labelId="demo-multiple-chip-label"
           id="demo-multiple-chip"
           multiple
-          value={personName}
+          value={selectedValues}
           onChange={handleChange}
           input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
           renderValue={(selected) => (

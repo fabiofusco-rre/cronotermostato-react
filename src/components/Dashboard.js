@@ -14,6 +14,8 @@ import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
 import WeekendIcon from '@mui/icons-material/Weekend';
 import ForestIcon from '@mui/icons-material/Forest';
 import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
+import Button from '@mui/material/Button';
+import {saveConfig, postSetTemperature} from '../lib/helpers'
 
 let marks = []
 let label = ''
@@ -45,7 +47,7 @@ const setpointLegend = {
   
 const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppConfig}) => {    
     const [isLoaded, setIsLoaded] = useState(false)    
-    const [temperatureSensor, setTemperatureSensor] = useState('')
+    const [temperatureSensor, setTemperatureSensor] = useState('')    
     const [tabValue, setTabValue] = useState('00:00')
     const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -54,6 +56,7 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
         // const initialValue = JSON.parse(saved);
         
         setTemperatureSensor(appConfig.zones[appConfig.currentTab].temperatureSensor)
+        //setClimateSensors(appConfig.zones[appConfig.currentTab].climateSensors)
         // setTemperatureSensor(
         setIsLoaded(true)
     }, [isLoaded])
@@ -93,6 +96,13 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
         console.log(conf)
     };
 
+    const climateSensorsChange = (state) => {        
+        let conf = {...appConfig}
+        conf.zones[appConfig.currentTab].climateSensors = state
+        setAppConfig(conf)
+        saveConfig(conf)
+    };
+
     const tabChange = (event, newValue) => {        
         setTabValue(newValue);
     };
@@ -104,7 +114,15 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
         conf.zones[appConfig.currentTab].setpointDefault[name].value = newValue        
         localStorage.setItem("appConfig", JSON.stringify(conf));
         setAppConfig(conf)
+        saveConfig(conf)
+    };
+
+    const handleTest = (event) => {
+        console.log(event)
+        let conf = {...appConfig}
         
+        
+        postSetTemperature(conf.zones[appConfig.currentTab].climateSensors, conf.vacationTemperature)
     };
 
     // console.log('appConfigig:', appConfig)
@@ -135,12 +153,17 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
                     Testine termostatiche:
                 </Grid>
                 <Grid item xs={10}>
-                    {!appConfig.vacationMode && (<MultipleSelectChip items={climateSensors} />)}
+                    {!appConfig.vacationMode && (
+                    <MultipleSelectChip items={climateSensors} onChangePost={climateSensorsChange} value={appConfig.zones[appConfig.currentTab].climateSensors} />
+                    )}
+                    <br></br>
+                    {localStorage.getItem('debugMode') && (<Button variant="contained" onClick={handleTest}>TEST</Button>)}
                 </Grid>
+                {false && (
                 <Grid item xs={2}>
                     Sensore temperatura:
-                </Grid>
-                <Grid item xs={10}>
+                </Grid>)}
+                {false && (<Grid item xs={10}>
                 <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
@@ -157,7 +180,7 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
                         </MenuItem>
                     ))}
                     </Select>
-                </Grid>
+                </Grid>)}
             </Grid>
             <h2>Set point ambiente:</h2>
             <Grid container rowSpacing={6} spacing={2}>

@@ -17,6 +17,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import TemperatureSlider from './TemperatureSlider'
+import {saveConfig} from '../lib/helpers'
 
 let marks = []
 let label = ''
@@ -38,7 +39,6 @@ const ConfigPanel = ({appConfig, setAppConfig, open, toggleOpen}) => {
 
     useEffect( () => {
         setZones(appConfig.zones)
-
 
         // console.log('zones:', zones)
     })
@@ -165,12 +165,36 @@ const ConfigPanel = ({appConfig, setAppConfig, open, toggleOpen}) => {
         setAppConfig(conf)
     };
     
-    const saveConfig = () => {
+    const handleSaveConfig = () => {
         let conf = {...appConfig}
+        saveConfig(conf)
+        /*
         console.log('save:', conf)
         localStorage.setItem("appConfig", JSON.stringify(conf));
         
         const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:9081/config";
+        (async () => {
+            const rawResponse = await fetch(urlGetConfig, {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(conf)
+            });
+            const content = await rawResponse.json();
+          
+            console.log(content);
+          })();
+        */
+        toggleOpen()
+    }
+
+    const triggerSensor = () => {
+        let conf = {...appConfig}
+        console.log('triggerSensor:', conf)        
+        
+        const urlGetConfig = "/api/services/climate/set_temperature";
         (async () => {
             const rawResponse = await fetch(urlGetConfig, {
               method: 'POST',
@@ -208,7 +232,7 @@ const ConfigPanel = ({appConfig, setAppConfig, open, toggleOpen}) => {
                         <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                         Configurazione
                         </Typography>
-                        <Button autoFocus color="inherit" onClick={saveConfig}>
+                        <Button autoFocus color="inherit" onClick={handleSaveConfig}>
                         Salva
                         </Button>
                     </Toolbar>
@@ -251,7 +275,7 @@ const ConfigPanel = ({appConfig, setAppConfig, open, toggleOpen}) => {
                         primary="Aggiungi nuova zona:"                            
                         />
                         <TextField disabled={!status} id="standard-basic" variant="standard" value={zone} onChange={handleAddZoneChange} />
-                        <Button disabled={zone == '' || !status} variant="outlined" onClick={() => handleAddZoneClick()}>Aggiungi</Button>
+                        <Button disabled={zone === '' || !status} variant="outlined" onClick={() => handleAddZoneClick()}>Aggiungi</Button>
                     </ListItem>
                     <Divider />                    
                     <ListItem>
