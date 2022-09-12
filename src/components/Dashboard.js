@@ -1,21 +1,23 @@
-import React, { useState, useEffect }  from 'react';
-import Grid from '@mui/material/Grid';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import React, { useState, useEffect }  from 'react'
+import Grid from '@mui/material/Grid'
+import MenuItem from '@mui/material/MenuItem'
+import Select from '@mui/material/Select'
 import TemperatureSlider from './TemperatureSlider'
 import MultipleSelectChip from './MultipleSelectChip'
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
+import Tabs from '@mui/material/Tabs'
+import Tab from '@mui/material/Tab'
+import Box from '@mui/material/Box'
 import ConfigTimeslice from './ConfigTimeslice'
-import EditIcon from '@mui/icons-material/Edit';
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
-import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf';
-import WeekendIcon from '@mui/icons-material/Weekend';
-import ForestIcon from '@mui/icons-material/Forest';
-import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
-import Button from '@mui/material/Button';
+import EditIcon from '@mui/icons-material/Edit'
+import BeachAccessIcon from '@mui/icons-material/BeachAccess'
+import EnergySavingsLeafIcon from '@mui/icons-material/EnergySavingsLeaf'
+import WeekendIcon from '@mui/icons-material/Weekend'
+import ForestIcon from '@mui/icons-material/Forest'
+import NaturePeopleIcon from '@mui/icons-material/NaturePeople'
+import Button from '@mui/material/Button'
+import Tooltip from '@mui/material/Tooltip'
 import {saveConfig, postSetTemperature} from '../lib/helpers'
+import { getMenuItemUnstyledUtilityClass } from '@mui/base'
 
 let marks = []
 let label = ''
@@ -121,7 +123,27 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
         console.log(event)
         let conf = {...appConfig}
         
+        const d = new Date();
+        let hour = d.getHours()
+        if(hour < 10) {
+            hour = '0' + hour
+        }
+        let min = d.getMinutes()
+        if(min < 30) {
+            min = '00'
+        } else {
+            min = '30'
+        }
+        const setpointKey = hour+':'+min
+        console.log(setpointKey)
+        console.log(conf)        
         
+        let temperature = conf.zones[appConfig.currentTab].setpointDefault[conf.zones[appConfig.currentTab].setpointTimeslice[setpointKey]].value
+
+        console.log(temperature)
+
+        alert('Invio la temperatura '+temperature+' ai sensori...')
+
         postSetTemperature(conf.zones[appConfig.currentTab].climateSensors, conf.vacationTemperature)
     };
 
@@ -156,8 +178,13 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
                     {!appConfig.vacationMode && (
                     <MultipleSelectChip items={climateSensors} onChangePost={climateSensorsChange} value={appConfig.zones[appConfig.currentTab].climateSensors} />
                     )}
-                    <br></br>
-                    {localStorage.getItem('debugMode') && (<Button variant="contained" onClick={handleTest}>TEST</Button>)}
+                    
+                    {localStorage.getItem('debugMode') === 'true' && (
+                        <Tooltip title="Invia segnale alle testine, usando la temperatura del setpoint più vicino">
+                            <Button variant="contained" size="large" onClick={handleTest}>TEST</Button>
+                        </Tooltip>
+                    
+                    )}
                 </Grid>
                 {false && (
                 <Grid item xs={2}>

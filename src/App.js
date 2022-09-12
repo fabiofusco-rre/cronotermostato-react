@@ -1,19 +1,20 @@
-import React, { useState, useEffect }  from 'react';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import SettingsIcon from '@mui/icons-material/Settings';
-import Tab from '@mui/material/Tab';
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
+import React, { useState, useEffect }  from 'react'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Typography from '@mui/material/Typography'
+import IconButton from '@mui/material/IconButton'
+import SettingsIcon from '@mui/icons-material/Settings'
+import Tab from '@mui/material/Tab'
+import TabContext from '@mui/lab/TabContext'
+import TabList from '@mui/lab/TabList'
+import TabPanel from '@mui/lab/TabPanel'
 import Dashboard from './components/Dashboard'
 import ConfigPanel from './components/ConfigPanel'
-import BeachAccessIcon from '@mui/icons-material/BeachAccess';
-  
+import BeachAccessIcon from '@mui/icons-material/BeachAccess'
+import {readConfig} from './lib/helpers'
+
 export const ConfContext = React.createContext("conf");
 
 const App = () => {
@@ -40,7 +41,7 @@ const App = () => {
 
     const defaultHeader = {
         headers: {
-          'Authorization': localStorage.getItem("haApiToken") || "ABCDEFG"
+          'Authorization': localStorage.getItem("haAPIToken") || "ABCDEFG"
         },
     };
 
@@ -52,7 +53,7 @@ const App = () => {
             { key: "2", label: "Notte" },            
         ])
 
-        //Recupera conf via API interne
+        //Recupera conf via API interne        
         //const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:9081/config";
         const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:" + process.env.REACT_APP_INTERNAL_API_PORT + "/config";        
         fetch(urlGetConfig)
@@ -72,6 +73,7 @@ const App = () => {
                 }
             )
         
+
         //Recupera i climate sensors da HA
         //const urlGetClimateSensors = localStorage.getItem("urlGetClimateSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
         const urlGetClimateSensors = localStorage.getItem("urlAPIStates") || "/api/states";
@@ -85,6 +87,7 @@ const App = () => {
                     setClimateSensors(r.map(i => i.entity_id));
                 },
                 (error) => {
+                    console.log(error)
                     setIsLoaded(true);
                     setError(error);
                 }

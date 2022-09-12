@@ -24,6 +24,33 @@ export function saveConfig(appConfig) {
       })();       
 };
 
+export async function readConfig(setAppConfig) {
+  const urlAPIConfig = localStorage.getItem("urlAPIConfig") || "http://localhost:" + process.env.REACT_APP_INTERNAL_API_PORT + "/config";
+    (async () => {
+        const rawResponse = await fetch(urlAPIConfig, {          
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },          
+        }).then(res => res.json())
+        .then(
+            (data) => {
+                //setIsLoaded(true);
+                //const r = data.filter(el => el.entity_id.startsWith("climate."));
+                const conf = data //JSON.parse(data)
+                console.log(data)
+                //console.log('rconfig',conf)
+                setAppConfig(conf)
+                //setClimateSensors(r.map(i => i.entity_id));
+            }
+        )
+        //const conf = await rawResponse.json();
+        
+        
+        
+      })();       
+}
+
 /**
  * 
  * @param {*} sensors Elenco dei sensori da contattare
