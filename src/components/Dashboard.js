@@ -144,7 +144,7 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
 
         alert('Invio la temperatura '+temperature+' ai sensori...')
 
-        postSetTemperature(conf.zones[appConfig.currentTab].climateSensors, conf.vacationTemperature)
+        postSetTemperature(conf.zones[appConfig.currentTab].climateSensors, temperature)
     };
 
     // console.log('appConfigig:', appConfig)
