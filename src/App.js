@@ -13,7 +13,7 @@ import TabPanel from '@mui/lab/TabPanel'
 import Dashboard from './components/Dashboard'
 import ConfigPanel from './components/ConfigPanel'
 import BeachAccessIcon from '@mui/icons-material/BeachAccess'
-import {readConfig} from './lib/helpers'
+import {readConfig, defaultHeader} from './lib/helpers'
 
 export const ConfContext = React.createContext("conf");
 
@@ -39,11 +39,12 @@ const App = () => {
         setAppConfig(appConfig)
     };
 
+    /*
     const defaultHeader = {
         headers: {
           'Authorization': localStorage.getItem("haAPIToken") || "ABCDEFG"
         },
-    };
+    };*/
 
     useEffect(() => {     
 
@@ -53,7 +54,7 @@ const App = () => {
             { key: "2", label: "Notte" },            
         ])
 
-        //Recupera conf via API interne        
+        //Recupera conf via API interne (da spostare nell'helper)     
         //const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:9081/config";
         const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:" + process.env.REACT_APP_INTERNAL_API_PORT + "/config";        
         fetch(urlGetConfig)
@@ -74,7 +75,7 @@ const App = () => {
             )
         
 
-        //Recupera i climate sensors da HA
+        //Recupera i climate sensors da HA (da spostare nell'helper)
         //const urlGetClimateSensors = localStorage.getItem("urlGetClimateSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
         const urlGetClimateSensors = localStorage.getItem("urlAPIStates") || "/api/states";
         fetch(urlGetClimateSensors, defaultHeader)
@@ -93,7 +94,7 @@ const App = () => {
                 }
             )
         
-        //Recupera i sensori di temperatura
+        //Recupera i sensori di temperatura (da spostare nell'helper)
         //const urlGetTemperatureSensors = localStorage.getItem("urlGetTemperatureSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
         const urlGetTemperatureSensors = localStorage.getItem("urlAPIStates") || "/api/states";
         fetch(urlGetTemperatureSensors, defaultHeader)

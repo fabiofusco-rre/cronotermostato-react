@@ -3,12 +3,19 @@
  * 
  */
 
+export const defaultHeader = {
+  headers: {
+    'Authorization': 'Bearer '+localStorage.getItem("haAPIToken") || "ABCDEFG",
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  },
+};
 
 export function saveConfig(appConfig) {
     let conf = {...appConfig}
     console.log('save:', conf)    
     
-    const urlAPIConfig = localStorage.getItem("urlAPIConfig") || "http://localhost:9081/config";
+    const urlAPIConfig = localStorage.getItem("urlAPIConfig") || "http://localhost:9080/apiserver/config";
     (async () => {
         const rawResponse = await fetch(urlAPIConfig, {
           method: 'POST',
@@ -25,7 +32,7 @@ export function saveConfig(appConfig) {
 };
 
 export async function readConfig(setAppConfig) {
-  const urlAPIConfig = localStorage.getItem("urlAPIConfig") || "http://localhost:" + process.env.REACT_APP_INTERNAL_API_PORT + "/config";
+  const urlAPIConfig = localStorage.getItem("urlAPIConfig") || "http://localhost:" + process.env.REACT_APP_INTERNAL_API_PORT + "/apiserver/config";
     (async () => {
         const rawResponse = await fetch(urlAPIConfig, {          
           headers: {
@@ -65,11 +72,8 @@ export async function postSetTemperature(sensors, temperature) {
     sensors.map(async (sensor) => {
       const data = {"entity_id": sensor, "temperature": temperature}
       const response = await fetch(urlAPIConfig, {
+        ...defaultHeader,
         method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(data)
       });
       return await response.json();
@@ -77,5 +81,29 @@ export async function postSetTemperature(sensors, temperature) {
   );
       
   console.log(returnPool); 
+};
+
+export function setTemperature(sensors, temperature, token) {
+  let data = {
+    sensors: sensors,
+    temeprature: temperature,
+    token: token
+  }
+  console.log('data:', data)
+  
+  const urlAPI = "http://localhost:9080/apiserver/setTemperature";
+  (async () => {
+      const rawResponse = await fetch(urlAPI, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      const content = await rawResponse.json();
+    
+      console.log(content);
+    })();       
 };
 

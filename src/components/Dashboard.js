@@ -16,7 +16,7 @@ import ForestIcon from '@mui/icons-material/Forest'
 import NaturePeopleIcon from '@mui/icons-material/NaturePeople'
 import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
-import {saveConfig, postSetTemperature} from '../lib/helpers'
+import {saveConfig, postSetTemperature, setTemperature} from '../lib/helpers'
 import { getMenuItemUnstyledUtilityClass } from '@mui/base'
 
 let marks = []
@@ -144,7 +144,11 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
 
         alert('Invio la temperatura '+temperature+' ai sensori...')
 
-        postSetTemperature(conf.zones[appConfig.currentTab].climateSensors, temperature)
+        //Invocazione diretta (pb di CORS almeno in locale)
+        //postSetTemperature(conf.zones[appConfig.currentTab].climateSensors, temperature)
+
+        //Invocazione tramite proxy
+        setTemperature(conf.zones[appConfig.currentTab].climateSensors, temperature, localStorage.getItem("haAPIToken"))
     };
 
     // console.log('appConfigig:', appConfig)
