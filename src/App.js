@@ -56,7 +56,7 @@ const App = () => {
 
         //Recupera conf via API interne (da spostare nell'helper)     
         //const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:9081/config";
-        const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:" + process.env.REACT_APP_INTERNAL_API_PORT + "/config";        
+        const urlGetConfig = localStorage.getItem("urlGetConfig") || "/apiserver/config";        
         fetch(urlGetConfig)
             .then(res => res.json())
             .then(
