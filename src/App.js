@@ -42,8 +42,7 @@ const App = () => {
   const defaultHeader = {
     headers: {
       Authorization:
-        localStorage.getItem("haAPIToken") ||
-        "Bearer 575c6dc0bf29dedc37cf71d196641929dc997af5b1cef008ebd496a8b3c3ee40be3f3f0051e9fa7d73bbcd0aa5fd0e66ea12383fba2ca6d9",
+        "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI1ZTA5MTY0OGQzM2E0OGY4YjcwNGM4NmU4NDU1MWY3YiIsImlhdCI6MTY2MTE3NzYyOSwiZXhwIjoxOTc2NTM3NjI5fQ.rqSM-ITm8cC6glYpF_v9U1Bu9VaUs68YEIyUHfl0uqU",
     },
   };
 
