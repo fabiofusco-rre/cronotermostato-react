@@ -54,9 +54,8 @@ const App = () => {
             { key: "2", label: "Notte" },            
         ])
 
-        //Recupera conf via API interne (da spostare nell'helper)     
-        //const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:9081/config";
-        const urlGetConfig = localStorage.getItem("urlGetConfig") || "/apiserver/config";        
+        //Recupera conf via API interne (da spostare nell'helper)             
+        const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:9080/apiserver/config";        
         fetch(urlGetConfig)
             .then(res => res.json())
             .then(
@@ -74,18 +73,22 @@ const App = () => {
                 }
             )
         
-
-        //Recupera i climate sensors da HA (da spostare nell'helper)
-        //const urlGetClimateSensors = localStorage.getItem("urlGetClimateSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
-        const urlGetClimateSensors = localStorage.getItem("urlAPIStates") || "/api/states";
-        fetch(urlGetClimateSensors, defaultHeader)
+        const urltest = localStorage.getItem("urltest") || "http://localhost:9080/apiserver/ha/states";
+        fetch(urltest, defaultHeader)
             .then(res => res.json())
             .then(
                 (data) => {
-                    //setIsLoaded(true);
-                    const r = data.filter(el => el.entity_id.startsWith("climate."));
-                    //console.log('r',r)
-                    setClimateSensors(r.map(i => i.entity_id));
+                    console.log('DATI:', data)
+
+                    //Recupera i climate sensors da HA (da spostare nell'helper)
+                    const r1 = data.filter(el => el.entity_id.startsWith("climate."));                 
+                    setClimateSensors(r1.map(i => i.entity_id));
+
+                    //Recupera i sensori di temperatura (da spostare nell'helper)
+                    const r2 = data.filter(el => el.entity_id.startsWith("temperature."));
+                    setTemperatureSensors(r2.map(i => i.entity_id));    
+
+                    setIsLoaded(true)   
                 },
                 (error) => {
                     console.log(error)
@@ -93,26 +96,47 @@ const App = () => {
                     setError(error);
                 }
             )
+
+        //Recupera i climate sensors da HA (da spostare nell'helper)
+        //const urlGetClimateSensors = localStorage.getItem("urlGetClimateSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
         
+        // const urlGetClimateSensors = localStorage.getItem("urlAPIStates") || "/api/states";
+        // fetch(urlGetClimateSensors, defaultHeader)
+        //     .then(res => res.json())
+        //     .then(
+        //         (data) => {
+        //             //setIsLoaded(true);
+        //             const r = data.filter(el => el.entity_id.startsWith("climate."));
+        //             //console.log('r',r)
+        //             setClimateSensors(r.map(i => i.entity_id));
+        //         },
+        //         (error) => {
+        //             console.log(error)
+        //             setIsLoaded(true);
+        //             setError(error);
+        //         }
+        //     )
+        
+
         //Recupera i sensori di temperatura (da spostare nell'helper)
         //const urlGetTemperatureSensors = localStorage.getItem("urlGetTemperatureSensors") || "https://my-json-server.typicode.com/peppelauro/myjsonserver/sensors";
-        const urlGetTemperatureSensors = localStorage.getItem("urlAPIStates") || "/api/states";
-        fetch(urlGetTemperatureSensors, defaultHeader)
-            .then(res => res.json())
-            .then(
-                (data) => {
-                    //setIsLoaded(true);                    
-                    const r = data.filter(el => el.entity_id.startsWith("temperature."));
-                    //console.log('r',r)
-                    setTemperatureSensors(r.map(i => i.entity_id));      
-                    setIsLoaded(true)              
-                },
-                (error) => {
-                    setIsLoaded(true);
-                    setError(error);
-                }
-        
-                )        
+        //const urlGetTemperatureSensors = localStorage.getItem("urlAPIStates") || "/api/states";
+        //fetch(urlGetTemperatureSensors, defaultHeader)
+        //    .then(res => res.json())
+        //    .then(
+        //        (data) => {
+        //            //setIsLoaded(true);                    
+        //            const r = data.filter(el => el.entity_id.startsWith("temperature."));
+        //            //console.log('r',r)
+        //            setTemperatureSensors(r.map(i => i.entity_id));      
+        //            setIsLoaded(true)              
+        //        },
+        //        (error) => {
+        //            setIsLoaded(true);
+        //            setError(error);
+        //        }
+        //
+        //        )        
 
         /*
         let conf = null

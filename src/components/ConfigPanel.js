@@ -168,25 +168,7 @@ const ConfigPanel = ({appConfig, setAppConfig, open, toggleOpen}) => {
     const handleSaveConfig = () => {
         let conf = {...appConfig}
         saveConfig(conf)
-        /*
-        console.log('save:', conf)
-        localStorage.setItem("appConfig", JSON.stringify(conf));
         
-        const urlGetConfig = localStorage.getItem("urlGetConfig") || "http://localhost:9081/config";
-        (async () => {
-            const rawResponse = await fetch(urlGetConfig, {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(conf)
-            });
-            const content = await rawResponse.json();
-          
-            console.log(content);
-          })();
-        */
         toggleOpen()
     }
 

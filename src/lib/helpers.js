@@ -2,10 +2,10 @@
  * Helper lib
  * 
  */
-
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxYmQzMDE1NzQzN2M0MjI0ODRjNGNlNTFlMGExZDY1YSIsImlhdCI6MTY2Mzc5MTY1MCwiZXhwIjoxOTc5MTUxNjUwfQ.sNblftRyGX4CxMm94_x2BRY_lAdfnJ2NtKL1Xs8xF04
 export const defaultHeader = {
   headers: {
-    'Authorization': 'Bearer '+localStorage.getItem("haAPIToken") || "ABCDEFG",
+    //'Authorization': 'Bearer '+localStorage.getItem("haAPIToken") || "ABCDEFG",
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   },
