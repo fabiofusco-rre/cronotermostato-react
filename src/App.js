@@ -17,7 +17,7 @@ import {readConfig, defaultHeader} from './lib/helpers'
 
 export const ConfContext = React.createContext("conf");
 
-const App = () => {
+export const App = () => {
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
     // const [users, setUsers] = useState([]);
