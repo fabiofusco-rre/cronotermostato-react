@@ -16,7 +16,7 @@ import ForestIcon from '@mui/icons-material/Forest'
 import NaturePeopleIcon from '@mui/icons-material/NaturePeople'
 import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
-import {saveConfig, postSetTemperature, setTemperature} from '../lib/helpers'
+import {saveConfig, setTemperature} from '../lib/helpers'
 import { getMenuItemUnstyledUtilityClass } from '@mui/base'
 
 let marks = []
@@ -135,20 +135,21 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
             min = '30'
         }
         const setpointKey = hour+':'+min
-        console.log(setpointKey)
+        
+        //console.log(setpointKey)
         console.log(conf)        
         
         let temperature = conf.zones[appConfig.currentTab].setpointDefault[conf.zones[appConfig.currentTab].setpointTimeslice[setpointKey]].value
 
-        console.log(temperature)
+        //console.log(temperature)
 
-        alert('Invio la temperatura '+temperature+' ai sensori...')
-
-        //Invocazione diretta (pb di CORS almeno in locale)
-        //postSetTemperature(conf.zones[appConfig.currentTab].climateSensors, temperature)
-
-        //Invocazione tramite proxy
-        setTemperature(conf.zones[appConfig.currentTab].climateSensors, temperature, localStorage.getItem("haAPIToken"))
+        if( conf.zones[appConfig.currentTab].climateSensors.length > 0) {
+            alert('Invio la temperatura '+temperature+' ai sensori...')            
+            //Invocazione tramite proxy
+            setTemperature(conf.zones[appConfig.currentTab].climateSensors, temperature)
+        } else {
+            alert('Bisogna prima selezionare dei sensori.')
+        }        
     };
 
     // console.log('appConfigig:', appConfig)

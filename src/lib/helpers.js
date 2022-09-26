@@ -2,10 +2,10 @@
  * Helper lib
  * 
  */
+
 //eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIxYmQzMDE1NzQzN2M0MjI0ODRjNGNlNTFlMGExZDY1YSIsImlhdCI6MTY2Mzc5MTY1MCwiZXhwIjoxOTc5MTUxNjUwfQ.sNblftRyGX4CxMm94_x2BRY_lAdfnJ2NtKL1Xs8xF04
 export const defaultHeader = {
-  headers: {
-    //'Authorization': 'Bearer '+localStorage.getItem("haAPIToken") || "ABCDEFG",
+  headers: {    
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   },
@@ -60,36 +60,15 @@ export async function readConfig(setAppConfig) {
 
 /**
  * 
- * @param {*} sensors Elenco dei sensori da contattare
- * @param {*} temperature Temperatura da impostare sui sensori
+ * @param {*} sensors 
+ * @param {*} temperature 
  */
-export async function postSetTemperature(sensors, temperature) {
-  console.log('Sono nella post')
-  // default url:/api/services/climate/set_temperature";
-  const urlAPIConfig = localStorage.getItem("urlAPIServiceClimatePOST") || process.env.REACT_APP_HA_API_SET_TEMPERATURE
-
-  const returnPool = await Promise.all(
-    sensors.map(async (sensor) => {
-      const data = {"entity_id": sensor, "temperature": temperature}
-      const response = await fetch(urlAPIConfig, {
-        ...defaultHeader,
-        method: 'POST',
-        body: JSON.stringify(data)
-      });
-      return await response.json();
-    })
-  );
-      
-  console.log(returnPool); 
-};
-
-export function setTemperature(sensors, temperature, token) {
+export function setTemperature(sensors, temperature) {
   let data = {
     sensors: sensors,
-    temeprature: temperature,
-    token: token
+    temperature: temperature
   }
-  console.log('data:', data)
+  console.log('In setTemperature, data:', data)
   
   const urlAPI = "http://localhost:9080/apiserver/setTemperature";
   (async () => {
@@ -103,7 +82,7 @@ export function setTemperature(sensors, temperature, token) {
       });
       const content = await rawResponse.json();
     
-      console.log(content);
+      console.log('In setTemperature, dopo la chiamata: ', content);
     })();       
 };
 

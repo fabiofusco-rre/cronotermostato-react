@@ -65,6 +65,7 @@ export const App = () => {
                     const conf = data //JSON.parse(data)
                     //console.log('rconfig',conf)
                     setAppConfig(conf)
+                    console.log('Config letta:', data)
                     //setClimateSensors(r.map(i => i.entity_id));
                 },
                 (error) => {
@@ -73,15 +74,16 @@ export const App = () => {
                 }
             )
         
-        const urltest = localStorage.getItem("urltest") || "http://localhost:9080/apiserver/ha/states";
+        const urltest = localStorage.getItem("urlGetStates") || "http://localhost:9080/apiserver/ha/states";
         fetch(urltest, defaultHeader)
             .then(res => res.json())
             .then(
                 (data) => {
-                    console.log('DATI:', data)
+                    console.log('DATI ricevuti da HA:', data)
 
                     //Recupera i climate sensors da HA (da spostare nell'helper)
-                    const r1 = data.filter(el => el.entity_id.startsWith("climate."));                 
+                    const r1 = data.filter(el => el.entity_id.startsWith("climate."));
+                    console.log(r1)               
                     setClimateSensors(r1.map(i => i.entity_id));
 
                     //Recupera i sensori di temperatura (da spostare nell'helper)
@@ -296,7 +298,7 @@ export const App = () => {
                                 })}                            
                             </TabContext>  
                         </Grid>
-                        )}
+                        )}                        
                         {/*<Grid item xs={12}>
                             <ul>
                             {users.map(user => (
