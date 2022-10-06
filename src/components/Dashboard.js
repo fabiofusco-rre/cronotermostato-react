@@ -3,9 +3,13 @@ import Grid from '@mui/material/Grid'
 import MenuItem from '@mui/material/MenuItem'
 import Select from '@mui/material/Select'
 import TemperatureSlider from './TemperatureSlider'
+import TimeSlider from './TimeSlider'
 import MultipleSelectChip from './MultipleSelectChip'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
+import TabContext from '@mui/lab/TabContext'
+import TabList from '@mui/lab/TabList'
+import TabPanel from '@mui/lab/TabPanel'
 import Box from '@mui/material/Box'
 import ConfigTimeslice from './ConfigTimeslice'
 import EditIcon from '@mui/icons-material/Edit'
@@ -16,6 +20,12 @@ import ForestIcon from '@mui/icons-material/Forest'
 import NaturePeopleIcon from '@mui/icons-material/NaturePeople'
 import Button from '@mui/material/Button'
 import Tooltip from '@mui/material/Tooltip'
+import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
 import {saveConfig, setTemperature} from '../lib/helpers'
 import { getMenuItemUnstyledUtilityClass } from '@mui/base'
 
@@ -52,6 +62,19 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
     const [temperatureSensor, setTemperatureSensor] = useState('')    
     const [tabValue, setTabValue] = useState('00:00')
     const [settingsOpen, setSettingsOpen] = useState(false);
+    const [tabIndex, setTabIndex] = useState('lun');
+    const [wkMaxValue, setWkMAxValue] = useState(24);
+
+    const weekdays = [
+        {key: 'lun', label: 'Lun'},
+        {key: 'mar', label: 'Mar'},
+        {key: 'mer', label: 'Mer'},
+        {key: 'gio', label: 'Gio'},
+        {key: 'ven', label: 'Ven'},
+        {key: 'sab', label: 'Sab'},
+        {key: 'dom', label: 'Dom'}        
+    ]
+    
 
     useEffect(() => {
         // const saved = localStorage.getItem("appConfigig");
@@ -67,6 +90,17 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
         setSettingsOpen(!settingsOpen);
      };   
 
+    const handleSetpointToggle = (index) => {        
+        //console.log(day, index)
+        let conf = {...appConfig}        
+        let current_setpoint = conf.zones[appConfig.currentTab].weekSetpoint[appConfig.currentDayTab][index].setpoint
+        current_setpoint = (current_setpoint + 1) % 3
+        conf.zones[appConfig.currentTab].weekSetpoint[appConfig.currentDayTab][index].setpoint = current_setpoint
+        //console.log(conf.zones[appConfig.currentTab].weekSetpoint[appConfig.currentDayTab][index])
+        setAppConfig(conf)
+        saveConfig(conf)
+     }; 
+
     const temperatureSensorChange = (event) => {
         const prev = temperatureSensor
         const curr = event.target.value
@@ -74,7 +108,7 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
         setTemperatureSensor(curr);
 
         let conf = {...appConfig}
-        conf.zones[appConfig.currentTab].temperatureSensor = event.target.value        
+        conf.zones[appConfig.currentTab].temperatureSensor = event.target.value
 
         //Rimuove elemento dalla lista perché impegnato
         const index = conf.temperatureSensors.indexOf(curr);
@@ -119,6 +153,37 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
         saveConfig(conf)
     };
 
+    const handleTimeChange = (event, newValue, activeThumb) => { 
+        const minDistance = 1           
+        const index = event.target.name
+        
+        let conf = {...appConfig}
+        const timeslices = conf.zones[appConfig.currentTab].weekSetpoint[appConfig.currentDayTab]
+        console.log(newValue, index, appConfig, timeslices, activeThumb)        
+        
+        if (activeThumb === 1) {
+            
+            //Sposta il corrente
+            conf.zones[appConfig.currentTab].weekSetpoint[appConfig.currentDayTab][index].value[1] = newValue[1]
+            
+            //Adatta il successivo (se esiste)
+            if(index + 1 < timeslices.length) {
+                conf.zones[appConfig.currentTab].weekSetpoint[appConfig.currentDayTab][index+1].value[0] = newValue[1]        
+            }                
+        }
+        
+        localStorage.setItem("appConfig", JSON.stringify(conf));
+
+        if (!Array.isArray(newValue)) {
+            return;
+        }
+                
+        setWkMAxValue(conf.zones[appConfig.currentTab].weekSetpoint[appConfig.currentDayTab][timeslices.length-1].value[1])
+        
+        setAppConfig(conf)
+        saveConfig(conf)
+    };
+
     const handleTest = (event) => {
         console.log(event)
         let conf = {...appConfig}
@@ -152,11 +217,89 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
         }        
     };
 
+    const handleTabChange = (event, newValue) => {
+        console.log(tabIndex)
+        console.log(newValue)
+        setTabIndex(newValue)    
+        let conf = {...appConfig}        
+        conf.currentDayTab = newValue
+        localStorage.setItem("appConfig", JSON.stringify(conf));
+        setAppConfig(conf)
+        saveConfig(conf)            
+    };
+
+    const addTimeSlider = () => {
+        let conf = {...appConfig}
+        const tmp = conf.zones[appConfig.currentTab].weekSetpoint[conf.currentDayTab]
+        const timeslices = conf.zones[appConfig.currentTab].weekSetpoint[appConfig.currentDayTab]
+        const val = [tmp[timeslices.length-1].value[1], 24]
+        conf.zones[appConfig.currentTab].weekSetpoint[conf.currentDayTab].push({value: val, setpoint: 1}) 
+        
+        localStorage.setItem("appConfig", JSON.stringify(conf));
+        setAppConfig(conf)
+        saveConfig(conf)            
+    }
+
     // console.log('appConfigig:', appConfig)
     return (isLoaded && appConfig.status &&
         <div>
             <h1>{name}</h1>
-            <h2>Set point per ciascuna mezz'ora:</h2>
+            <h2>Set point:</h2>
+            <Container maxWidth="false">
+               
+                <TabContext value={tabIndex}>
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <TabList onChange={handleTabChange} aria-label="tab" scrollButtons={true} allowScrollButtonsMobile variant="scrollable" centered>
+                    {weekdays.map((data) => {
+                        return (
+                            <Tab label={data.label} value={data.key} key={data.key} />                            
+                        );
+                    })}                               
+                    </TabList>
+                    </Box>
+                    {weekdays.map((data) => {                                
+                        return (
+                            <TabPanel value={data.key} key={data.key}>
+                                <Container>                                    
+                                    <Box>
+                                    {appConfig.zones[appConfig.currentTab].weekSetpoint[data.key].map((wk, index) => {
+                                        //const setpoint = setpointLegend[appConfig.zones[appConfig.currentTab].setpointTimeslice[h]]    
+                                        //const setpointDegree = appConfig.zones[appConfig.currentTab].setpointDefault.filter(obj => {return obj.label === setpoint})[0].value+'°'
+                                        const icon = setpointIcon[wk.setpoint]                    
+                                        // return <Tab disabled={appConfig.vacationMode} icon={<span>{icon}<span><br></br>{setpoint}<br></br>{setpointDegree}</span></span>} iconPosition="bottom" label={h} wrapped key={h} value={h} onClick={handleSettingsOpen} />
+                                        return (
+                                            <Grid container rowSpacing={6} spacing={1}>
+                                                <Grid item xs={2}>                                                                                                    
+                                                    <IconButton onClick={() => handleSetpointToggle(index)} aria-label="delete" size="small">
+                                                        {icon}
+                                                    </IconButton>
+                                                </Grid>
+                                                <Grid item xs={10}>
+                                                <TimeSlider 
+                                                name={index} 
+                                                min={1} 
+                                                max={24} 
+                                                value={wk.value} 
+                                                onValueChange={handleTimeChange} 
+                                                disabled={appConfig.vacationMode} />                                                    
+                                                </Grid>
+                                            </Grid>
+                                        )}
+                                    )}
+                                    <Button disabled={wkMaxValue === 24} variant="contained" size="small" onClick={addTimeSlider}>+</Button>
+                                    </Box>                                   
+                                </Container>
+                            </TabPanel>                                
+                        );
+                    })}                            
+                </TabContext>                               
+                <Box sx={{ width: '600px', bgcolor: 'background.paper' }}>
+                   
+                </Box>
+                
+            </Container>
+           
+            {false && (
             <Box sx={{ bgcolor: 'background.paper' }}>
             <Tabs      
                 value={tabValue}          
@@ -172,7 +315,7 @@ const Dashboard = ({name, climateSensors, temperatureSensors, appConfig, setAppC
                     return <Tab disabled={appConfig.vacationMode} icon={<span>{icon}<span><br></br>{setpoint}<br></br>{setpointDegree}</span></span>} iconPosition="bottom" label={h} wrapped key={h} value={h} onClick={handleSettingsOpen} />
                 })}                
             </Tabs>
-            </Box>
+            </Box>)}
           
             <h2>Sensori ambiente:</h2>
             <Grid container rowSpacing={6} spacing={2} >
